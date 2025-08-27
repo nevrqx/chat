@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content" />
+  <meta name="theme-color" content="#0a0a0b" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <title>Чат</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+  <body>
+  <div id="appLoader" class="app-loader" aria-live="polite" aria-busy="true" role="status">
+    <div class="loader-backdrop"></div>
+    <div class="loader-content">
+      <div class="loader-spinner" aria-hidden="true"></div>
+      <div class="loader-text">Загрузка чата…</div>
+    </div>
+  </div>
+  <div id="app">
+    <aside class="sidebar">
+      <div class="brand">💬 Чаты</div>
+
+      <div class="me-card" id="meCard">
+        <div class="me-row">
+          <img id="meAvatar" class="avatar lg" alt="Аватар" />
+          <div class="me-info">
+            <div class="me-name" id="meName">Мой ник: …</div>
+            <div class="me-id" id="meId"></div>
+            <div class="me-bio" id="meBioDisplay"></div>
+          </div>
+        </div>
+        <button id="editProfileBtn" class="edit-profile-btn" type="button">Редактировать профиль</button>
+        <div id="profileEditor" class="profile-editor hidden">
+          <label class="field">
+            <span class="label">Никнейм</span>
+            <input id="meNickInput" type="text" placeholder="Ваш ник…" maxlength="24" />
+          </label>
+          <label class="field">
+            <span class="label">Фото профиля</span>
+            <div class="avatar-upload">
+              <img id="meAvatarPreview" class="avatar lg" alt="Превью" />
+              <input id="avatarInput" type="file" accept="image/*" hidden />
+              <div class="upload-controls">
+                <button id="avatarBrowseBtn" type="button" class="secondary">Выбрать файл</button>
+                <span id="avatarStatus" class="upload-status">Не выбрано</span>
+              </div>
+            </div>
+          </label>
+          <label class="field">
+            <span class="label">О себе</span>
+            <textarea id="meBio" rows="3" placeholder="Короткая биография…"></textarea>
+          </label>
+          <div class="editor-actions">
+            <button id="saveProfileBtn" type="button" class="primary">Сохранить</button>
+            <button id="cancelProfileBtn" type="button" class="secondary">Отмена</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="search">
+        <input id="searchInput" type="text" placeholder="Поиск по нику…" />
+        <button id="settingsBtn" class="settings-btn" title="Настройки" aria-label="Настройки">⚙️</button>
+      </div>
+
+      <div class="chat-list" id="chatList">
+        <div class="chat-item pinned" data-room-id="global" id="globalChatItem">
+          <div class="title">📌 Общий чат</div>
+          <div class="subtitle">Закреплён</div>
+        </div>
+        <div class="section-title">Личные сообщения</div>
+        <div id="dmList" class="dm-list empty-state">Начните поиск людей по нику</div>
+      </div>
+
+      <div class="footer-note">
+        Тёмная тема · Минимальный дизайн
+      </div>
+    </aside>
+
+    <main class="chat">
+      <header class="chat-header">
+        <button id="menuBtn" class="menu-btn" aria-label="Открыть список чатов">☰</button>
+        <div class="room-title" id="roomTitle">Общий чат</div>
+      </header>
+
+      <section class="messages" id="messages"></section>
+
+      <footer class="composer">
+        <div id="replyBar" class="reply-bar hidden">
+          <div class="reply-title">Ответ на: <span id="replyAuthor"></span></div>
+          <div class="reply-text" id="replyText"></div>
+          <button id="replyCancel" class="reply-cancel" title="Отменить">✕</button>
+        </div>
+        <div id="uploadBar" class="upload-bar hidden" aria-live="polite">
+          <div class="spinner"></div>
+          <div class="upload-text" id="uploadText">Загрузка изображения…</div>
+        </div>
+        <input id="messageInput" type="text" placeholder="Напишите сообщение…" />
+        <input id="fileInput" type="file" accept="image/*" hidden />
+        <button id="attachBtn" title="Прикрепить изображение">🖼️</button>
+        <button id="sendBtn" title="Отправить">➤</button>
+      </footer>
+    </main>
+  </div>
+
+  <div id="imageModal" class="modal hidden">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-content">
+      <img id="modalImage" alt="Изображение" />
+      <button id="modalClose" class="modal-close">✕</button>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profileModal" class="modal hidden">
+    <div class="modal-backdrop" id="profileBackdrop"></div>
+    <div class="modal-content profile-content">
+      <button id="profileClose" class="modal-close">✕</button>
+      <div class="profile-card">
+        <img id="profileAvatar" class="avatar lg" alt="Аватар" />
+        <div class="profile-main">
+          <div id="profileName" class="profile-name">Профиль</div>
+          <div id="profileBio" class="profile-bio">…</div>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <button id="profileMsgBtn" class="primary">Написать сообщение</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal hidden">
+    <div id="settingsBackdrop" class="modal-backdrop"></div>
+    <div class="modal-content settings-content">
+      <button id="settingsClose" class="modal-close">✕</button>
+      <div class="settings-header">Настройки</div>
+      <div class="settings-group">
+        <label class="settings-row">
+          <span>Лёгкий режим (экономия ресурсов)</span>
+          <input id="liteToggle" type="checkbox" />
+        </label>
+        <label class="settings-row">
+          <span>Фон чата (URL изображения)</span>
+          <input id="bgUrlInput" type="url" placeholder="https://…" />
+        </label>
+        <label class="settings-row">
+          <span>Размер шрифта сообщений</span>
+          <input id="fontSizeRange" type="range" min="12" max="20" step="1" />
+        </label>
+        <label class="settings-row">
+          <span>Затемнение фона чата</span>
+          <input id="dimRange" type="range" min="0" max="0.9" step="0.05" />
+        </label>
+        <div class="settings-actions">
+          <button id="applyAppearanceBtn" class="primary">Применить оформление</button>
+        </div>
+      </div>
+      <div class="settings-group">
+        <label class="settings-row">
+          <span>Компактный режим</span>
+          <input id="compactToggle" type="checkbox" />
+        </label>
+        <label class="settings-row">
+          <span>Отключить анимации</span>
+          <input id="noAnimToggle" type="checkbox" />
+        </label>
+      </div>
+      <div class="settings-group">
+        <div class="settings-row two">
+          <button id="installPWABtn" class="secondary">Установить как приложение</button>
+          <button id="fullscreenBtn" class="secondary">Полноэкранный режим</button>
+        </div>
+        <div class="settings-row">
+          <button id="resetLocalBtn" class="danger">Сбросить локальные данные</button>
+        </div>
+        <div class="settings-row two">
+          <button id="exportSettingsBtn" class="secondary">Экспорт настроек</button>
+          <button id="importSettingsBtn" class="secondary">Импорт настроек</button>
+          <input id="importSettingsFile" type="file" accept="application/json" hidden />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="script.js"></script>
+</body>
+</html>
