@@ -1,0 +1,12 @@
+{
+  "name": "Чаты",
+  "short_name": "Чаты",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "display_override": ["standalone", "fullscreen", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#0a0a0b",
+  "theme_color": "#0a0a0b",
+  "description": "Минималистичный чат с мобильной оптимизацией"
+}
